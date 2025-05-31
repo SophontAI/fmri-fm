@@ -1,6 +1,6 @@
 # fMRI Foundation Model
 
-In-progress -- this repo is under active development in the MedARC discord server. https://medarc.ai/fmri
+In-progress -- this repo is under active development by Sophont
 
 ## Installation
 
