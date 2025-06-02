@@ -7,11 +7,11 @@ set -e
 python3.11 -m venv foundation_env
 source foundation_env/bin/activate
 
-# Ensure uv is installed for faster package installations
-pip install uv
-
 # Upgrade pip
 pip install --upgrade pip
+
+# Ensure uv is installed for faster package installations
+pip install uv
 
 # Use uv to install packages concurrently
 uv pip install numpy==2.2.0 matplotlib jupyter jupyterlab_nvdashboard jupyterlab ipywidgets scipy tqdm scikit-learn scikit-image accelerate webdataset pandas matplotlib einops ftfy regex h5py wandb nilearn nibabel boto3==1.34.57 open_clip_torch kornia omegaconf decord smart-open ffmpeg-python opencv-python==4.6.0.66 torchmetrics==1.3.0.post0 diffusers==0.23.0 pytorch-lightning==2.0.1 transformers==4.44.2 xformers==0.0.22.post7
