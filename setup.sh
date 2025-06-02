@@ -4,7 +4,7 @@
 set -e
 
 # Create a new virtual environment and activate it
-python3.13 -m venv foundation_env
+python3.11 -m venv foundation_env
 source foundation_env/bin/activate
 
 # Ensure uv is installed for faster package installations
