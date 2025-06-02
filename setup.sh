@@ -20,4 +20,4 @@ uv pip install torch==2.4.1 --index-url https://download.pytorch.org/whl/cu121
 uv pip install torchvision==0.19.1
 
 # Install jupyter kernel spec
-python -m ipykernel install --user --name=foundation_env
+python3 -m ipykernel install --user --name=foundation_env
