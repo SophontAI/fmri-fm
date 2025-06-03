@@ -1,7 +1,7 @@
 model_name: "HCP_large_pt1" 
 datasets_to_include: "BOTH" # ["NSD", "HCP", "BOTH"]
-hcp_flat_path: "/scratch/gpfs/KNORMAN/HCP-Flat"
-nsd_flat_path: "/scratch/gpfs/KNORMAN/NSD-Flat"
+hcp_flat_path: "/home/connor/fmri-fm/datasets/HCP-Flat"
+nsd_flat_path: "/home/connor/fmri-fm/datasets/NSD-Flat"
 
 model_size: "large"
 global_pool: False

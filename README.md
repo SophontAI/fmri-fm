@@ -22,6 +22,7 @@ or use `uv run`. See the [uv docs](https://docs.astral.sh/uv/getting-started/) f
 
 - https://huggingface.co/datasets/bold-ai/HCP-Flat
 - https://huggingface.co/datasets/bold-ai/NSD-Flat
+- https://huggingface.co/datasets/pscotti/mindeyev2
 
 ## Usage
 
