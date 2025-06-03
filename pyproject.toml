@@ -32,6 +32,8 @@ dependencies = [
     "scikit-image",
     "scikit-learn",
     "scipy",
+    "setuptools==66.1.1",
+    "sgm",
     "smart-open",
     "torchmetrics==1.3.0.post0",
     "torchvision",
@@ -44,3 +46,5 @@ dependencies = [
 
 [tool.uv.sources]
 clip = { git = "https://github.com/openai/CLIP.git", rev = "dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1" }
+# Nov 2023 SD-Turbo release
+sgm = { git = "https://github.com/Stability-AI/generative-models.git", rev = "9d759324e914de6c96dbd1468b3a4a50243c6528" }
