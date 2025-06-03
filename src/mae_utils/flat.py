@@ -361,6 +361,10 @@ class HCPDataset:
         self.tar_files = self._build_tar_list(train_split=train_split)
 
     def _build_tar_list(self,train_split=.9):
+        # don't allow train/test overlap
+        # test split is fixed to be the range [0.9, 1.0]
+        assert train_split <= 0.9, "max hcp train_split is 0.9"
+
         tar_files = []
         sample_count = 0
 

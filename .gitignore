@@ -197,7 +197,9 @@ cython_debug/
 # Local data
 datasets
 checkpoints
+wandb
 
 # Local scratch/tmp
 .scratch
 tmp
+scripts/nbconvert
