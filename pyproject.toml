@@ -1,6 +1,10 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "fmri-fm"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Sophont fMRI foundation model"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -49,3 +53,6 @@ dependencies = [
 clip = { git = "https://github.com/openai/CLIP.git", rev = "dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1" }
 # Nov 2023 SD-Turbo release
 sgm = { git = "https://github.com/Stability-AI/generative-models.git", rev = "9d759324e914de6c96dbd1468b3a4a50243c6528" }
+
+[tool.setuptools_scm]
+version_file = "src/mae_utils/_version.py"

@@ -649,8 +649,7 @@ wheels = [
 
 [[package]]
 name = "fmri-fm"
-version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "accelerate" },
     { name = "boto3" },
