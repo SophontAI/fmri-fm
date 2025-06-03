@@ -682,6 +682,7 @@ dependencies = [
     { name = "setuptools" },
     { name = "sgm" },
     { name = "smart-open" },
+    { name = "torchdata" },
     { name = "torchmetrics" },
     { name = "torchvision" },
     { name = "tqdm" },
@@ -721,8 +722,9 @@ requires-dist = [
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "setuptools", specifier = "==66.1.1" },
-    { name = "sgm", git = "https://github.com/Stability-AI/generative-models.git?rev=abe9ed3d40b3ac0b1f15c652ded5a50856674f20" },
+    { name = "sgm", git = "https://github.com/Stability-AI/generative-models.git?rev=9d759324e914de6c96dbd1468b3a4a50243c6528" },
     { name = "smart-open" },
+    { name = "torchdata", specifier = "==0.10.1" },
     { name = "torchmetrics", specifier = "==1.3.0.post0" },
     { name = "torchvision" },
     { name = "tqdm" },
@@ -3166,7 +3168,7 @@ wheels = [
 [[package]]
 name = "sgm"
 version = "0.1.0"
-source = { git = "https://github.com/Stability-AI/generative-models.git?rev=abe9ed3d40b3ac0b1f15c652ded5a50856674f20#abe9ed3d40b3ac0b1f15c652ded5a50856674f20" }
+source = { git = "https://github.com/Stability-AI/generative-models.git?rev=9d759324e914de6c96dbd1468b3a4a50243c6528#9d759324e914de6c96dbd1468b3a4a50243c6528" }
 
 [[package]]
 name = "six"
@@ -3370,6 +3372,19 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/74/07/edce54779f5c3fe8ab8390eafad3d7c8190fce68f922a254ea77f4a94a99/torch-2.1.0-cp311-cp311-win_amd64.whl", hash = "sha256:5c3bfa91ce25ba10116c224c59d5b64cdcce07161321d978bd5a1f15e1ebce72", size = 192334326, upload-time = "2023-10-04T16:38:57.636Z" },
     { url = "https://files.pythonhosted.org/packages/16/dd/1bf10180ba812afa1aa7427466083d731bc37b9a1157ec929d0cfeef87eb/torch-2.1.0-cp311-none-macosx_10_9_x86_64.whl", hash = "sha256:601b0a2a9d9233fb4b81f7d47dca9680d4f3a78ca3f781078b6ad1ced8a90523", size = 146687601, upload-time = "2023-10-04T16:58:55.988Z" },
     { url = "https://files.pythonhosted.org/packages/7b/7c/4d8728e6f8dbe2b8af054bd92c290d94c633270443514e3ee4b768125cf9/torch-2.1.0-cp311-none-macosx_11_0_arm64.whl", hash = "sha256:3cd1dedff13884d890f18eea620184fb4cd8fd3c68ce3300498f427ae93aa962", size = 59554546, upload-time = "2023-10-04T16:38:01.628Z" },
+]
+
+[[package]]
+name = "torchdata"
+version = "0.10.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+    { name = "torch" },
+    { name = "urllib3" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ca/b4/9d1c717e23fa238ec9ec39de728f120bd92561490c9b6ab26394d431ab26/torchdata-0.10.1-py3-none-any.whl", hash = "sha256:30bfb8300d0e4bf406d72930e453e2995ed5e31afce06fa335518ae070da5dab", size = 57479, upload-time = "2024-12-13T15:58:34.271Z" },
 ]
 
 [[package]]

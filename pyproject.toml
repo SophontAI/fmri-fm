@@ -35,6 +35,7 @@ dependencies = [
     "setuptools==66.1.1",
     "sgm",
     "smart-open",
+    "torchdata==0.10.1",
     "torchmetrics==1.3.0.post0",
     "torchvision",
     "tqdm",
