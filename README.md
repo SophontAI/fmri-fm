@@ -4,9 +4,19 @@ In-progress -- this repo is under active development by Sophont
 
 ## Installation
 
-- Run setup.sh to create a new "foundation_env" virtual environment
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), clone the repo, and run
 
-- Activate the virtual environment with "source foundation_env/bin/activate"
+```bash
+uv sync
+```
+
+This will create a new virtual environment for the project with all the required dependencies. Activate the environment with
+
+```bash
+source .venv/bin/activate
+```
+
+or use `uv run`. See the [uv docs](https://docs.astral.sh/uv/getting-started/) for more details.
 
 ## Datasets
 
