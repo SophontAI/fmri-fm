@@ -721,7 +721,7 @@ requires-dist = [
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "setuptools", specifier = "==66.1.1" },
-    { name = "sgm", git = "https://github.com/Stability-AI/generative-models.git?rev=9d759324e914de6c96dbd1468b3a4a50243c6528" },
+    { name = "sgm", git = "https://github.com/SophontAI/generative-models.git?rev=ab02deac54eb81a96035256c3fd86fa77d75db53" },
     { name = "smart-open" },
     { name = "torch", specifier = "==2.4.1" },
     { name = "torchdata", specifier = "==0.10.1" },
@@ -3167,7 +3167,7 @@ wheels = [
 [[package]]
 name = "sgm"
 version = "0.1.0"
-source = { git = "https://github.com/Stability-AI/generative-models.git?rev=9d759324e914de6c96dbd1468b3a4a50243c6528#9d759324e914de6c96dbd1468b3a4a50243c6528" }
+source = { git = "https://github.com/SophontAI/generative-models.git?rev=ab02deac54eb81a96035256c3fd86fa77d75db53#ab02deac54eb81a96035256c3fd86fa77d75db53" }
 
 [[package]]
 name = "six"
