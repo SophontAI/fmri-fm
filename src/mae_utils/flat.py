@@ -19,6 +19,10 @@ import torchdata.nodes as tn
 from torchdata.nodes.base_node import BaseNode
 from torchdata.nodes.types import Stateful
 
+HCP_FLAT_PATH = os.getenv("HCP_FLAT_PATH") or "datasets/HCP-Flat"
+NSD_FLAT_PATH = os.getenv("NSD_FLAT_PATH") or "datasets/NSD-Flat"
+
+
 def to_tensor(img, mask, gsr=False):
     img = torch.from_numpy(img)
     if gsr:
@@ -59,15 +63,18 @@ def batch_unmask(img: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     return unmasked
 
 ##### NSD #####
-shared1000 = np.where(np.load("/scratch/gpfs/KNORMAN/mindeyev2_dataset/shared1000.npy"))[0]
+def load_shared1000(folder=NSD_FLAT_PATH):
+    shared1000 = np.where(np.load(os.path.join(folder, "shared1000.npy")))[0]
+    return shared1000
+
 NSD_NUM_SHARDS = 300
 
-def load_nsd_flat_mask(folder="/weka/proj-medarc/shared/NSD-Flat/") -> torch.Tensor:
+def load_nsd_flat_mask(folder=NSD_FLAT_PATH) -> torch.Tensor:
     mask = np.load(os.path.join(folder, "nsd-flat_mask.npy"))
     mask = torch.as_tensor(mask)
     return mask
 
-def load_nsd_flat_mask_visual(folder="/weka/proj-medarc/shared/NSD-Flat/") -> torch.Tensor:
+def load_nsd_flat_mask_visual(folder=NSD_FLAT_PATH) -> torch.Tensor:
     mask = np.load(os.path.join(folder, "nsd-flat_mask_visual.npy"))
     mask = torch.as_tensor(mask)
     return mask
@@ -76,7 +83,7 @@ class NSDDataset:
     def __init__(
         self,
         split: str = "all",
-        root: str = "/weka/proj-medarc/shared/NSD-Flat",
+        root: str = NSD_FLAT_PATH,
         frames: int = 16,
         same_run_samples: int = 16,
         gsr: Optional[bool] = True,
@@ -100,9 +107,10 @@ class NSDDataset:
         self.mindeye = mindeye
         self.mindeye_TR_delay = mindeye_TR_delay
         self.mask = load_nsd_flat_mask(root)
+        self.shared1000 = load_shared1000(root)
         self.fix_start = fix_start
         self.resampled = resampled
-        self.tar_files = self._build_tar_list() 
+        self.tar_files = self._build_tar_list()
 
 
     def _build_tar_list(self):
@@ -138,20 +146,20 @@ class NSDDataset:
                             if not (("ses-01" in base_name) and not ("sub-01" in base_name)):
                                 continue
 
-                    if member.name.endswith("bold.npy"): 
+                    if member.name.endswith("bold.npy"):
                         sample_count += 1
-                        tar_contains_matching_file = True 
+                        tar_contains_matching_file = True
 
                 if tar_contains_matching_file:
-                    tar_files.append(tar_file_path_str) 
+                    tar_files.append(tar_file_path_str)
 
-        self.len_unique_samples = sample_count 
+        self.len_unique_samples = sample_count
         return tar_files
 
     def _pull_data(self, sample):
         bold = sample["bold.npy"]
         meta = sample["meta.json"]
-        misc = sample["misc.npz"] 
+        misc = sample["misc.npz"]
         offset = misc["offset"]
         global_signal = misc["global_signal"]
         beta = misc["beta"]
@@ -199,7 +207,7 @@ class NSDDataset:
             if self.sub is not None:
                 if meta['sub'] != int(self.sub[-1]):
                     return None
-            
+
             events = sample_dict["events"]
             nsd_onset_indices, nsd_ids = [], []
             for event in events:
@@ -207,13 +215,13 @@ class NSDDataset:
                 nsd_ids.append(event['nsd_id'])
             nsd_onset_indices = np.array(nsd_onset_indices).astype(int)
             nsd_ids = np.array(nsd_ids).astype(int) - 1 # because it's originally 1-indexed
-            
+
             if len(nsd_onset_indices)==0:
                 return None
             elif self.split=="test":
-                if not np.any(np.isin(nsd_ids, shared1000)):
+                if not np.any(np.isin(nsd_ids, self.shared1000)):
                     return None
-            
+
         img = sample_dict["bold"]
         offset = sample_dict["offset"]
         global_signal = sample_dict["global_signal"]
@@ -237,7 +245,7 @@ class NSDDataset:
             else:
                 offset_start = np.random.choice(np.arange(self.frames - 1))
                 starts = np.random.choice(np.arange(offset_start, len(img) - self.frames, self.frames), size=self.same_run_samples, replace=False)
-    
+
             clips_list = []
             for start in starts:
                 clip = to_tensor(img[start:start + self.frames], mask=self.mask, gsr=self.gsr)
@@ -248,11 +256,11 @@ class NSDDataset:
 
         elif self.mindeye:
             if self.split=="train":
-                nsd_onset_indices_split = nsd_onset_indices[~np.isin(nsd_ids, shared1000)]
-                nsd_ids_split = nsd_ids[~np.isin(nsd_ids, shared1000)]
+                nsd_onset_indices_split = nsd_onset_indices[~np.isin(nsd_ids, self.shared1000)]
+                nsd_ids_split = nsd_ids[~np.isin(nsd_ids, self.shared1000)]
             elif self.split=="test":
-                nsd_onset_indices_split = nsd_onset_indices[np.isin(nsd_ids, shared1000)]
-                nsd_ids_split = nsd_ids[np.isin(nsd_ids, shared1000)]
+                nsd_onset_indices_split = nsd_onset_indices[np.isin(nsd_ids, self.shared1000)]
+                nsd_ids_split = nsd_ids[np.isin(nsd_ids, self.shared1000)]
             else:
                 nsd_onset_indices_split = nsd_onset_indices
                 nsd_ids_split = nsd_ids
@@ -261,7 +269,7 @@ class NSDDataset:
                 random_pick = np.random.randint(len(nsd_ids_split))
             else: # return ALL samples; your batch_size should be 1 because now the amount of samples returned is variable which otherwise messes with webloader concatenation
                 random_pick = np.arange(len(nsd_ids_split))
-            
+
             nsd_id = nsd_ids_split[random_pick]
             chosen_onset = nsd_onset_indices_split[random_pick]
             starts = chosen_onset + self.mindeye_TR_delay
@@ -275,8 +283,8 @@ class NSDDataset:
                     clip = to_tensor(img[start:start + self.frames], mask=self.mask, gsr=self.gsr)
                     clips_list.append(clip)
                 clips = torch.stack(clips_list, dim=0)
-            
-            return clips, meta, nsd_id #, misc            
+
+            return clips, meta, nsd_id #, misc
 
 
     def get_dataset(self):
@@ -307,7 +315,6 @@ class NSDDataset:
 
 ##### HCP #####
 # HCP-specific constants
-HCP_FLAT_ROOT = "https://huggingface.co/datasets/bold-ai/HCP-Flat/resolve/main"
 HCP_NUM_SHARDS = 1803
 
 # Tasks and conditions used in prior works (Zhang, 2021; Rastegarnia, 2023)
@@ -322,7 +329,7 @@ INCLUDE_CONDS = [
 HCP_TR = {"3T": 0.72, "7T": 1.0}
 DEFAULT_DELAY_SECS = 4 * 0.72
 
-def load_hcp_flat_mask(folder="/weka/proj-medarc/shared/HCP-Flat/") -> torch.Tensor:
+def load_hcp_flat_mask(folder=HCP_FLAT_PATH) -> torch.Tensor:
     mask = np.load(os.path.join(folder, "hcp-flat_mask.npy"))
     mask = torch.as_tensor(mask)
     return mask
@@ -331,7 +338,7 @@ class HCPDataset:
     def __init__(
         self,
         split: str = "all",
-        root: str = None,
+        root: str = HCP_FLAT_PATH,
         frames: int = 16,
         same_run_samples: int = 16,
         gsr: Optional[bool] = True,
@@ -354,6 +361,10 @@ class HCPDataset:
         self.tar_files = self._build_tar_list(train_split=train_split)
 
     def _build_tar_list(self,train_split=.9):
+        # don't allow train/test overlap
+        # test split is fixed to be the range [0.9, 1.0]
+        assert train_split <= 0.9, "max hcp train_split is 0.9"
+
         tar_files = []
         sample_count = 0
 
@@ -363,7 +374,7 @@ class HCPDataset:
             tar_files = [f"{self.root}/tars/hcp-flat_{shard:06d}.tar" for shard in shard_range]
             return tar_files
         else:
-            # train/test split is based no tar files to be most computationally efficient, 
+            # train/test split is based no tar files to be most computationally efficient,
             # this is ok because the tars were created already shuffling the samples
             tar_files = sorted([str(path) for path in Path(self.root).rglob("*.tar")])
             if self.split=="train":
@@ -376,7 +387,7 @@ class HCPDataset:
                 tar_files = tar_files[int(len(tar_files)*.9):]
                 self.len_unique_samples = 2169
             return tar_files
-        
+
         return tar_files
 
     def _pull_data(self, sample):
@@ -413,13 +424,13 @@ class HCPDataset:
                     return None
                 elif not events[0]['trial_type'] in INCLUDE_CONDS:
                     return None
-                else: 
+                else:
                     trial_type = events[0]['trial_type']
-            
+
 
         # if not meta in INCLUDE_TASKS:
         #     return None
-        
+
         img = sample_dict["bold"]
         meta = sample_dict["meta"]
         offset = sample_dict["offset"]
@@ -449,7 +460,7 @@ class HCPDataset:
                 new_offset = (offset_start + len(TRs)) % self.frames
                 TRs = np.concatenate([TRs, np.arange(new_offset, len(img) - self.frames, self.frames)])
                 TRs = np.unique(TRs) # remove possible duplicates and sort it
-            
+
             starts = np.random.choice(
                 TRs,
                 size=self.same_run_samples,
@@ -464,7 +475,7 @@ class HCPDataset:
 
         if self.cond_subset:
             return clips, meta, trial_type
-        else: 
+        else:
             return clips, meta
 
     def get_dataset(self):
